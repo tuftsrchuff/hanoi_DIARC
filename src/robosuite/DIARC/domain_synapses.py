@@ -3,6 +3,7 @@ from robosuite.DIARC.detector import Detector
 import numpy as np
 from robosuite import load_controller_config
 import time
+import re
 """
 Functions specific to domain for tower of hanoi problem in robosuite
 """
@@ -69,21 +70,33 @@ def populateExecutorInfo(env):
 
 
 #Create robosuite tower of hanoi environment
-def create_env(env_id, render=False, seed=None):
-    print(f"Creating env ID: {env_id}, render {render}, seed {seed}")
+def create_env(env_id, rand_rest = False):
+    print(f"Creating env ID: {env_id}, random reset {rand_rest}")
 
 
-    # create environment instance
-    env = suite.make(
-        env_name="Hanoi",
-        robots="Kinova3", 
-        has_renderer=True,
-        has_offscreen_renderer=False,
-        use_camera_obs=False,
-        # render_camera="agentview",
-        controller_configs=controller_config,
-        # random_reset = True
-    )
+    if env_id == "standard":
+        # create environment instance
+        env = suite.make(
+            env_name="Hanoi",
+            robots="Kinova3", 
+            has_renderer=True,
+            has_offscreen_renderer=False,
+            use_camera_obs=False,
+            # render_camera="agentview",
+            controller_configs=controller_config,
+            random_reset = rand_rest
+        )
+    else:
+        env = suite.make(
+            env_name="DoorNovelty",
+            robots="Kinova3", 
+            has_renderer=True,
+            has_offscreen_renderer=False,
+            use_camera_obs=False,
+            # render_camera="agentview",
+            controller_configs=controller_config,
+            random_reset = rand_rest
+        )
 
     return env
 
@@ -146,3 +159,32 @@ def termination_indicator(operator):
             return condition
 
     return Beta
+
+
+
+
+def decomposeAction(action):
+    split_symbols = '(:,)'
+    start_letters = ["peg", "cub"]
+    split_pattern = f"[{re.escape(split_symbols)}]"
+    components = re.split(split_pattern, action)
+    base_action = components[0]
+    objects = [word for word in components if word[:3] in start_letters]
+    print(objects)
+    if base_action == "reach_pick":
+        toMove = objects[1]
+        destination = objects[0]
+        symgoal = toMove
+    elif base_action == "pick":
+        toMove = objects[0]
+        destination = objects[1]
+        symgoal = toMove
+    elif base_action == "reach_drop":
+        toMove = objects[0]
+        destination = objects[2]
+        symgoal = [toMove, destination]
+    else:
+        toMove = objects[0]
+        destination = objects[1]
+        symgoal = [toMove, destination]
+    return base_action, symgoal

@@ -20,7 +20,6 @@ controller_config = load_controller_config(default_controller='OSC_POSITION')
 TRAINING_STEPS = 1000000
 
 
-
 class Learner():
     def __init__(self, env, operator):
         self.env = env
@@ -29,27 +28,9 @@ class Learner():
 
         populateExecutorInfo(env)
 
-        self.env = suite.make(
-            env_name="DoorNovelty",
-            robots="Kinova3", 
-            has_renderer=True,
-            has_offscreen_renderer=False,
-            use_camera_obs=False,
-            render_camera="agentview",
-            controller_configs=controller_config,
-            random_reset = True
-        )
+        self.env = create_env("door", rand_rest=True)
 
-        self.eval_env = suite.make(
-            env_name="DoorNovelty",
-            robots="Kinova3", 
-            has_renderer=True,
-            has_offscreen_renderer=False,
-            use_camera_obs=False,
-            render_camera="agentview",
-            controller_configs=controller_config,
-            random_reset = True
-        )
+        self.eval_env = create_env("door", rand_rest=True)
 
         self.env = GymWrapper(self.env, keys=['robot0_proprio-state', 'object-state'])
         self.eval_env = GymWrapper(self.eval_env, keys=['robot0_proprio-state', 'object-state'])
@@ -66,6 +47,8 @@ class Learner():
 
     
     def learn(self):
+        print(f"Learning {self.operator}")
+        time.sleep(5)
         #Call train 
         self.env = Monitor(self.env, filename=None, allow_early_resets=True)
 

@@ -7,6 +7,7 @@ from robosuite.DIARC.detector import Detector
 from robosuite.DIARC.domain_synapses import *
 import numpy as np
 import time
+import re
 
 class Executor():
     def __init__(self, env, operator):
@@ -18,8 +19,8 @@ class Executor():
 
     
     def execute_policy(self,
-                       symgoal = None):
-
+                       symgoal = None): 
+        print("Starting policy execution")
 
         done = False
         rew_eps = 0
@@ -53,6 +54,7 @@ class Executor():
 
         #Need to pass in initial observation somehow        
         while not done and not terminated:
+            print("Executing actions")
             action, _states = model.predict(obs)
             obs, reward, terminated, truncated, info = self.env.step(action)
 

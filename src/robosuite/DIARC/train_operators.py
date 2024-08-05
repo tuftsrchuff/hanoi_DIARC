@@ -347,7 +347,7 @@ def create_envs():
         has_renderer=True,
         has_offscreen_renderer=False,
         use_camera_obs=False,
-        render_camera="agentview",
+        # render_camera="agentview",
         controller_configs=controller_config,
         random_reset = True
     )
@@ -358,7 +358,7 @@ def create_envs():
         has_renderer=True,
         has_offscreen_renderer=False,
         use_camera_obs=False,
-        render_camera="agentview",
+        # render_camera="agentview",
         controller_configs=controller_config,
         random_reset = True
     )
