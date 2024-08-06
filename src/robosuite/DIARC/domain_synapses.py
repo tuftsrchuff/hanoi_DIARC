@@ -12,10 +12,10 @@ controller_config = load_controller_config(default_controller='OSC_POSITION')
 
 #Executor mapping
 executors = {
-     'pick': './operators/pick_sac.zip',
-     'drop': './operators/drop_ppo.zip',
-     'reach_drop': './operators/reachdrop_sac.zip',
-     'reach_pick': './operators/reach_pick_sac.zip'
+     'pick': '../operators/pick_sac.zip',
+     'drop': '../operators/drop_ppo.zip',
+     'reach_drop': '../operators/reachdrop_sac.zip',
+     'reach_pick': '../operators/reach_pick_sac.zip'
 }
 
 obj_mapping = {}
@@ -84,7 +84,9 @@ def create_env(env_id, rand_rest = False):
             use_camera_obs=False,
             # render_camera="agentview",
             controller_configs=controller_config,
-            random_reset = rand_rest
+            random_reset = rand_rest,
+            ignore_done=True if not rand_rest else False
+
         )
     else:
         env = suite.make(
@@ -95,7 +97,8 @@ def create_env(env_id, rand_rest = False):
             use_camera_obs=False,
             # render_camera="agentview",
             controller_configs=controller_config,
-            random_reset = rand_rest
+            random_reset = rand_rest,
+            ignore_done=True if not rand_rest else False
         )
 
     return env
@@ -164,15 +167,15 @@ def termination_indicator(operator):
 
 
 def decomposeAction(action):
-    print("In decompose")
+    action = str(action)
     split_symbols = '(:,)'
     start_letters = ["peg", "cub"]
-    split_pattern = f"[{re.escape(split_symbols)}]"
-    print("Split pattern created")
-    # return "reach_pick", "cube1"
-    components = re.split(split_pattern, action)
+    try:
+        split_pattern = f"[{re.escape(split_symbols)}]"
+        components = re.split(split_pattern, action)
+    except Exception as e: 
+        print(e)
     
-    print("Split into components")
     base_action = components[0]
     objects = [word for word in components if word[:3] in start_letters]
     print(objects)

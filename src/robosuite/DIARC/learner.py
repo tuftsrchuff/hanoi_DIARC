@@ -45,6 +45,12 @@ class Learner():
         else:
             self.env = DropWrapper(self.env)
 
+    def success_rate(self):
+        #Create new env, wrap and run for 10 runs
+
+        #Must be successful more than 90% of time to return tr
+        pass
+
     
     def learn(self):
         print(f"Learning {self.operator}")
@@ -102,9 +108,13 @@ class Learner():
         )
 
         # Save the model
-        model.save(os.path.join(f'./operators/{self.operator}_postfail'))
-        model.save_replay_buffer(f'./operators/{self.operator}_postfail_buffer')
+        model.save(os.path.join(f'../operators/{self.operator}_postfail'))
+        model.save_replay_buffer(f'../operators/{self.operator}_postfail_buffer')
 
         executors[self.operator] = f'./models/{self.operator}_postfail.zip'
         print(f"Executor file location {executors[self.operator]}")
+
+        #Policy evaluation?
+
+        return True
 
