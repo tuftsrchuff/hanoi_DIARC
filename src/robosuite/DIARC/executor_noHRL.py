@@ -29,6 +29,8 @@ class Executor():
             model = PPO.load(executors[self.operator])
         else:
             model = SAC.load(executors[self.operator])
+        
+        print("Model loaded")
 
         #Base action
         base_action = np.zeros(len(self.env.action_space.sample()))

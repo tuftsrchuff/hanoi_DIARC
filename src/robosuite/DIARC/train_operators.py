@@ -13,6 +13,7 @@ from stable_baselines3.common.callbacks import EvalCallback, BaseCallback
 from stable_baselines3.common.monitor import Monitor
 from robosuite import load_controller_config
 import time
+from robosuite.DIARC.domain_synapses import *
 
 controller_config = load_controller_config(default_controller='OSC_POSITION')
 
@@ -239,6 +240,13 @@ def train_drop(env, eval_env):
 
 def train_reach_drop(env, eval_env):
     print("Training ReachDrop")
+
+    # env = create_env("door", rand_rest=True)
+
+    # eval_env = create_env("door", rand_rest=True)
+    # env = GymWrapper(env, keys=['robot0_proprio-state', 'object-state'])
+    # eval_env = GymWrapper(eval_env, keys=['robot0_proprio-state', 'object-state'])
+
     #Wrap environment in the wrapper, try to train
     env = ReachDropWrapper(env)
     check_env(env)

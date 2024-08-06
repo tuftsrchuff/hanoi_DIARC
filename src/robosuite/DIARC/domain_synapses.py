@@ -164,10 +164,15 @@ def termination_indicator(operator):
 
 
 def decomposeAction(action):
+    print("In decompose")
     split_symbols = '(:,)'
     start_letters = ["peg", "cub"]
     split_pattern = f"[{re.escape(split_symbols)}]"
+    print("Split pattern created")
+    # return "reach_pick", "cube1"
     components = re.split(split_pattern, action)
+    
+    print("Split into components")
     base_action = components[0]
     objects = [word for word in components if word[:3] in start_letters]
     print(objects)
