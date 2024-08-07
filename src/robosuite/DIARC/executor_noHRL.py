@@ -20,7 +20,7 @@ class Executor():
 
     
     def execute_policy(self,
-                       symgoal = None): 
+                       symgoal = None, render=False): 
         print("Starting policy execution")
         print(f"Executor path {executors[self.operator]}")
         time.sleep(5)
@@ -63,7 +63,8 @@ class Executor():
                 done = Beta(self.env, symgoal)
 
                 #Render issue with OpenGL inside JVM
-                # self.env.render()
+                if render:
+                    self.env.render()
 
 
                 if step_executor > 1000:
