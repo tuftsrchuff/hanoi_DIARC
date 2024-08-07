@@ -22,8 +22,9 @@ class Executor():
     def execute_policy(self,
                        symgoal = None): 
         print("Starting policy execution")
+        print(f"Executor path {executors[self.operator]}")
+        time.sleep(5)
 
-        print(type(symgoal))
 
         done = False
         rew_eps = 0
@@ -33,8 +34,6 @@ class Executor():
                 model = PPO.load(executors[self.operator])
             else:
                 model = SAC.load(executors[self.operator])
-        
-            print("Model loaded")
 
             #Base action
             base_action = np.zeros(len(self.env.action_space.sample()))
@@ -44,26 +43,17 @@ class Executor():
 
 
             obs = addGoal(obs, symgoal, self.env, self.operator)
-            print("Goal added")
 
             
-
-            # #Adds 3D goal from symgoal
-            # if self.operator in ["reach_pick", "pick", "reach_drop"]:
-            #     obs = np.concatenate((obs, self.env.sim.data.body_xpos[self.obj_mapping[symgoal]][:3]))
-            # else:
-            #     obs = np.concatenate((obs, self.env.sim.data.body_xpos[self.obj_mapping[symgoal[1]]][:3]))
 
             Beta = termination_indicator(self.operator)
             terminated = False
             print(symgoal)
 
-            # time.sleep(5)
 
-            #Need to pass in initial observation somehow        
+            #Pass in initial observation   
             while not done and not terminated:
                 action, _states = model.predict(obs)
-                print(f"Executing action {action}")
                 obs, reward, terminated, truncated, info = self.env.step(action)
 
                 #addGoal
@@ -71,22 +61,20 @@ class Executor():
                 step_executor += 1
                 rew_eps += reward
                 done = Beta(self.env, symgoal)
+
+                #Render issue with OpenGL inside JVM
                 # self.env.render()
-                # print(info)
-                # state = self.detector.get_groundings(as_dict=True, binary_to_float=False, return_distance=False)
-                # print(state)
+
 
                 if step_executor > 1000:
                     done = True
 
-            print(f"Terminated: {terminated}")
-            print(f"Done: {done}")
+
             # comparing execution effects to expected effects
             new_state = self.detector.get_groundings(self.env)
 
 
             expected_effects_keys = effects(self.operator, symgoal)
-            print(expected_effects_keys)
 
             #Compare looks at all predicates in new state and checks if it exists in grounded
             #predicates in old state, if not adds it to the execution_effects
@@ -99,6 +87,7 @@ class Executor():
             print(f"Execution efects {execution_effects}")
 
             success = True
+            del model
             for i, val in enumerate(execution_effects):
                 if expected_effects[i] != val:
                     success = False
@@ -110,3 +99,4 @@ class Executor():
                 return False
         except Exception as e:
             print(e)
+            del model

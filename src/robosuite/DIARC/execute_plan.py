@@ -84,18 +84,18 @@ if __name__ == "__main__":
     print(plan)
     plan = ['REACH_PICK PEG2 CUBE1', 'PICK CUBE1 CUBE2', 'REACH_DROP CUBE1 CUBE2 PEG1', 'DROP CUBE1 PEG1']
 
-    #Solve task on standard env - will complete
-    env = create_env("standard", rand_rest=False)
-    env = GymWrapper(env, keys=['robot0_proprio-state', 'object-state'])
+    # #Solve task on standard env - will complete
+    # env = create_env("standard", rand_rest=False)
+    # env = GymWrapper(env, keys=['robot0_proprio-state', 'object-state'])
 
 
-    for action in plan:
-        base_action, toMove, destination = decomposeAction(action)
-        success = executeAction(base_action, toMove, destination, env)
-        if not success:
-            print("Task failed...")
-            task_learned = call_learner(base_action, env)
-            break
+    # for action in plan:
+    #     base_action, toMove, destination = decomposeAction(action)
+    #     success = executeAction(base_action, toMove, destination, env)
+    #     if not success:
+    #         print("Task failed...")
+    #         task_learned = call_learner(base_action, env)
+    #         break
 
     #Solve task on door novelty, should fail and learn
     env = create_env("door", rand_rest=False)

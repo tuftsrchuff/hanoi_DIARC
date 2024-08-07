@@ -178,7 +178,7 @@ def decomposeAction(action):
     
     base_action = components[0]
     objects = [word for word in components if word[:3] in start_letters]
-    print(objects)
+    # print(objects)
     if base_action == "reach_pick":
         toMove = objects[1]
         destination = objects[0]

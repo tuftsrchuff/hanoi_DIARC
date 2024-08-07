@@ -49,7 +49,6 @@ def train_reach_pick(env, eval_env):
     #Wrap environment in the wrapper, try to train
     env = ReachPickWrapper(env)
 
-    #environment got invalid action dimension -- expected 8, got 4
     check_env(env)
     env = Monitor(env, filename=None, allow_early_resets=True, info_keywords=("is_success",))
 
