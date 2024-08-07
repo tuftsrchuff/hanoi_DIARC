@@ -17,6 +17,10 @@ controller_config = load_controller_config(default_controller='OSC_POSITION')
 
 TRAINING_STEPS = 500000
 
+"""
+    Continual training on pre-existing operators
+"""
+
 class BufferCallback(BaseCallback):
     """
     A custom callback that derives from ``BaseCallback``.

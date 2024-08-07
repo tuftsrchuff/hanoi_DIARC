@@ -5,6 +5,13 @@ from robosuite.wrappers.gym_wrapper import GymWrapper
 import time
 from learner import Learner
 
+
+"""
+This file is to execute the plan outside of DIARC, used for testing operators
+in robosuite and generic parsing
+"""
+
+#Decompose action in PDDL plan
 def decomposeAction(action):
     print("Decomposing")
     action = action.lower()
@@ -21,7 +28,7 @@ def decomposeAction(action):
     return base_action, toMove, destination
     
     
-
+#Execute proper executor from action
 def executeAction(base_action, toMove, destination, env):
     print(base_action, toMove, destination)
 
@@ -60,7 +67,7 @@ def executeAction(base_action, toMove, destination, env):
         
         return True
 
-
+#Learner for failed operator
 def call_learner(operator, env):
     print(f"Learning new operator {operator}")
     learner = Learner(env, operator)

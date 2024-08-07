@@ -14,7 +14,7 @@ from robosuite.DIARC.detector import Detector
 from robosuite.DIARC.domain_synapses import *
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import EvalCallback, CallbackList, StopTrainingOnNoModelImprovement
-import time
+import random
 from robosuite.DIARC.executor_noHRL import Executor
 
 controller_config = load_controller_config(default_controller='OSC_POSITION')
@@ -28,6 +28,7 @@ class Learner():
         self.detector = Detector(env)
         self.operator = operator
 
+        #Populates domain specific information
         populateExecutorInfo(env)
 
         self.env = create_env("standard", rand_rest=True)
@@ -37,7 +38,7 @@ class Learner():
         self.env = GymWrapper(self.env, keys=['robot0_proprio-state', 'object-state'])
         self.eval_env = GymWrapper(self.eval_env, keys=['robot0_proprio-state', 'object-state'])
 
-        #Wrap environment in proper wrapper
+        #Wrap environment in proper wrapper for reward, goal
         if self.operator == 'reach_pick':
             self.env = ReachPickWrapper(self.env)
             self.eval_env = ReachPickWrapper(self.eval_env)
@@ -52,22 +53,24 @@ class Learner():
             self.eval_env = DropWrapper(self.eval_env)
 
     def eval_policy(self):
-        #Create new env, wrap and run for 10 runs
-        self.env.reset()
-        self.eval_env.reset()
+        #Note this is a quick test to evaluate the policy for reach_pick and reach_drop
 
-        executor = Executor(self.env, 'reach_pick')
-        success = executor.execute_policy(symgoal="cube1")
+        cubes = ["cube1", "cube2", "cube3"]
+        count = 0
+        for i in range(10):
+            self.env.reset()
+            random_integer = random.randint(0, 2)
+            cube = cubes[random_integer]
 
+            executor = Executor(self.env, self.operator)
+            success = executor.execute_policy(symgoal=cube)
+            if success: count += 1
 
-        #Must be successful more than 90% of time to return tr
-        return True
-    
-
-    def loadAndEval(self):
-        #Do max 10 evals, if any eval of 10 trials fails then retrain
-        #Otherwise return True, policy good to go - after 10 evals return False
-        pass
+        #Learned policy must return better than 90% run rate
+        if count >= 9:
+            return True
+        else:
+            return False        
 
     
     def learn(self):
@@ -125,10 +128,8 @@ class Learner():
         executors[self.operator] = f'../operators/{self.operator}_postfail.zip'
         print(f"Executor file location {executors[self.operator]}")
 
-        #Policy evaluation for 10 evals needs to reach goal, otherwise train more
-        # for i in range(10):
-        #     result = self.eval_policy()
-        #     if result == False: return False
+        #Policy evaluation for 10 evals needs to reach goal
+        # return self.eval_policy()
 
         return True
 

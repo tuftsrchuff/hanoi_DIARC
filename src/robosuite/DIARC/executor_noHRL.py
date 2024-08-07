@@ -14,6 +14,8 @@ class Executor():
     def __init__(self, env, operator):
         self.env = env
         self.detector = Detector(env)
+
+        #Must cast Java string object to python string in DIARC
         self.operator = str(operator)
 
         populateExecutorInfo(env)
@@ -23,7 +25,6 @@ class Executor():
                        symgoal = None, render=False): 
         print("Starting policy execution")
         print(f"Executor path {executors[self.operator]}")
-        time.sleep(5)
 
 
         done = False
@@ -35,17 +36,14 @@ class Executor():
             else:
                 model = SAC.load(executors[self.operator])
 
-            #Base action
+            #Base action to return observation
             base_action = np.zeros(len(self.env.action_space.sample()))
             obs, _, _, _, _ = self.env.step(base_action)
 
-            #addGoal - generic
-
-
+            #addGoal to obs space for agent execution
             obs = addGoal(obs, symgoal, self.env, self.operator)
 
-            
-
+            #Indication for whether goal met
             Beta = termination_indicator(self.operator)
             terminated = False
             print(symgoal)

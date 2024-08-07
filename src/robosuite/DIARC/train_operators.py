@@ -20,11 +20,13 @@ controller_config = load_controller_config(default_controller='OSC_POSITION')
 TRAINING_STEPS = 1000000
 ITERATION = 5
 
+"""
+    File used to train individual operators for use in DIARC
+"""
+
 class BufferCallback(BaseCallback):
     """
-    A custom callback that derives from ``BaseCallback``.
-
-    :param verbose: Verbosity level: 0 for no output, 1 for info messages, 2 for debug messages
+    A custom callback that derives from ``BaseCallback``. Used to save buffer
     """
     def __init__(self, verbose: int = 0, path=None):
         super().__init__(verbose)

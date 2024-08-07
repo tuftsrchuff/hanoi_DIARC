@@ -165,7 +165,7 @@ def termination_indicator(operator):
 
 
 
-
+#Decompose the action passed in by DIARC into operator and symbolic goals
 def decomposeAction(action):
     action = str(action)
     split_symbols = '(:,)'
