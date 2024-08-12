@@ -8,7 +8,7 @@ from robosuite.DIARC.domain_synapses import *
 import numpy as np
 import time
 import os
-
+from robosuite.DIARC.diarc-rl.diarc-rl import TRADEWrapper
 
 class Executor():
     def __init__(self, env, operator):
@@ -17,7 +17,7 @@ class Executor():
 
         #Must cast Java string object to python string in DIARC
         self.operator = str(operator)
-
+        self.wrapper = TRADEWrapper()
         populateExecutorInfo(env)
 
     
@@ -48,11 +48,14 @@ class Executor():
             terminated = False
             print(symgoal)
 
-
+            use_diarc = True
             #Pass in initial observation   
             while not done and not terminated:
                 action, _states = model.predict(obs)
-                obs, reward, terminated, truncated, info = self.env.step(action)
+                if use_diarc:
+                    obs, reward, terminated, truncated, info = self.wrapper.call_trade("diarc_step", action)
+                else:
+                    obs, reward, terminated, truncated, info = self.env.step(action)
 
                 #addGoal
                 obs = addGoal(obs, symgoal, self.env, self.operator)
