@@ -20,9 +20,9 @@ class Executor():
         self.wrapper = TRADEWrapper()
         populateExecutorInfo(env)
 
-    
+
     def execute_policy(self,
-                       symgoal = None, render=False): 
+                       symgoal = None, render=False):
         print("Starting policy execution")
         print(f"Executor path {executors[self.operator]}")
 
@@ -49,11 +49,13 @@ class Executor():
             print(symgoal)
 
             use_diarc = True
-            #Pass in initial observation   
+            #Pass in initial observation
             while not done and not terminated:
                 action, _states = model.predict(obs)
                 if use_diarc:
-                    obs, reward, terminated, truncated, info = self.wrapper.call_trade("diarc_step", action)
+                    response = self.wrapper.call_trade("diarc_step", action)
+                    # todo: Parse string response (maybe a jstring) into needed info
+                    obs, reward, terminated, truncated, info = None, None, None, None, None
                 else:
                     obs, reward, terminated, truncated, info = self.env.step(action)
 
