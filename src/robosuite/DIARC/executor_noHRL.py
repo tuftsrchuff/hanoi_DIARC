@@ -8,7 +8,7 @@ from robosuite.DIARC.domain_synapses import *
 import numpy as np
 import time
 import os
-from robosuite.DIARC.diarc-rl.diarc-rl import TRADEWrapper
+from robosuite.DIARC.diarc_rl.diarc_rl import TRADEWrapper
 
 class Executor():
     def __init__(self, env, operator):
