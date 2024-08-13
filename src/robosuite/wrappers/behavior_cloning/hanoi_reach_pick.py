@@ -200,6 +200,25 @@ class ReachPickWrapper(gym.Wrapper):
         # time.sleep(5)
         return obs, info
 
+    # def reset(self, seed=None):
+    #     #print("Moving gripper over object...")
+    #     steps = 0
+    #     while steps < 100:
+    #         gripper_pos = np.asarray(self.env.sim.data.body_xpos[self.gripper_body])
+    #         object_pos = np.asarray(self.env.sim.data.body_xpos[self.obj_mapping[self.place_to_drop]])
+    #         print(object_pos)
+    #         dist_xy_plan = object_pos[:2] - gripper_pos[:2]
+    #         action = 5*np.concatenate([dist_xy_plan, [0, 0]])
+    #         obs,_,_,_,_ = self.env.step(action)
+    #         self.env.render()
+    #         print("Resetting...")
+    #         time.sleep(2)
+    #         state = self.detector.get_groundings(as_dict=True, binary_to_float=False, return_distance=False)
+    #         steps += 1
+    #     obs = np.concatenate((obs, self.env.sim.data.body_xpos[self.obj_mapping[self.obj_to_pick]][:3]))
+    #     return obs, {}
+
+
     def step(self, action):
         # if self.nulified_action_indexes is not empty, fill the action with zeros at the indexes
         if self.nulified_action_indexes:

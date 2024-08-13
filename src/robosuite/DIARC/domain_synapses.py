@@ -196,3 +196,18 @@ def decomposeAction(action):
         destination = objects[1]
         symgoal = [toMove, destination]
     return base_action, symgoal
+
+
+def convert_to_string(obs, reward, terminated, truncated):
+    ret_string = "["
+    for i, item in enumerate(obs):
+        item = str(item)
+        if i == 0:
+            ret_string = ret_string + item
+        else:
+            ret_string = ret_string + ", " + item
+    ret_string += "], "
+    ret_string += str(reward) + ", "
+    ret_string += str(terminated) + ", "
+    ret_string += str(truncated)
+    return ret_string

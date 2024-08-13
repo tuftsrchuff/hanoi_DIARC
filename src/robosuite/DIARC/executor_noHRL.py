@@ -20,6 +20,37 @@ class Executor():
         self.wrapper = TRADEWrapper()
         populateExecutorInfo(env)
 
+    def convert_to_string(self, arr):
+        ret_string = "["
+        for i, item in enumerate(arr):
+            item = str(item)
+            if i == 0:   
+                ret_string = ret_string + item
+            else:
+                ret_string = ret_string + ", " + item
+        ret_string += "]"
+        
+        return ret_string
+
+    def convert_to_resp(self, response):
+        response = str(response)
+        response = response.split("]")
+        response[0] = response[0][1:]
+        numbers = response[0].split(", ")
+        obs = []
+        for item in numbers:
+            obs.append(float(item))
+        obs = np.array(obs, dtype=np.float64)
+        response = response[1].split(", ")[1:]
+        reward = float(response[0])
+        if response[1] == "False":
+            terminated = False
+        else:
+            terminated = True
+
+
+        return obs, reward, terminated
+
 
     def execute_policy(self,
                        symgoal = None, render=False):
@@ -39,6 +70,7 @@ class Executor():
             #Base action to return observation
             base_action = np.zeros(len(self.env.action_space.sample()))
             obs, _, _, _, _ = self.env.step(base_action)
+            
 
             #addGoal to obs space for agent execution
             obs = addGoal(obs, symgoal, self.env, self.operator)
@@ -53,12 +85,16 @@ class Executor():
             while not done and not terminated:
                 action, _states = model.predict(obs)
                 if use_diarc:
-                    print("Calling diarc step")
+                    action = self.convert_to_string(action)
                     response = self.wrapper.call_trade("diarc_step", action)
+                    
                     # todo: Parse string response (maybe a jstring) into needed info
-                    obs, reward, terminated, truncated, info = None, None, None, None, None
+                    obs, reward, terminated = self.convert_to_resp(response)
+
                 else:
                     obs, reward, terminated, truncated, info = self.env.step(action)
+                # obs, reward, terminated, truncated, info = self.env.step(action)
+
 
                 #addGoal
                 obs = addGoal(obs, symgoal, self.env, self.operator)
@@ -90,6 +126,7 @@ class Executor():
             expected_effects = effect_mapping[self.operator]
             print(f"Expected effects {expected_effects}")
             print(f"Execution efects {execution_effects}")
+            time.sleep(5)
 
             success = True
             del model

@@ -25,18 +25,19 @@ class Learner():
     def __init__(self, env, operator):
         print("Creating learner init class")
         self.env = env
+        self.eval_env = env
         self.detector = Detector(env)
         self.operator = operator
 
         #Populates domain specific information
         populateExecutorInfo(env)
 
-        self.env = create_env("standard", rand_rest=True)
+        # self.env = create_env("standard", rand_rest=True)
 
-        self.eval_env = create_env("standard", rand_rest=True)
+        # self.eval_env = create_env("standard", rand_rest=True)
 
-        self.env = GymWrapper(self.env, keys=['robot0_proprio-state', 'object-state'])
-        self.eval_env = GymWrapper(self.eval_env, keys=['robot0_proprio-state', 'object-state'])
+        # self.env = GymWrapper(self.env, keys=['robot0_proprio-state', 'object-state'])
+        # self.eval_env = GymWrapper(self.eval_env, keys=['robot0_proprio-state', 'object-state'])
 
         #Wrap environment in proper wrapper for reward, goal
         if self.operator == 'reach_pick':
@@ -117,7 +118,7 @@ class Learner():
         model.learn(
             total_timesteps=TRAINING_STEPS,
             callback=eval_callback,
-            progress_bar=True
+            # progress_bar=True
         )
 
         # Save the model

@@ -35,7 +35,7 @@ def executeAction(base_action, toMove, destination, env):
 
     if base_action == "reach_pick":
         executor = Executor(env, 'reach_pick')
-        success = executor.execute_policy(symgoal=toMove)
+        success = executor.execute_policy(symgoal=toMove, render=True)
         if not success:
             print("Reach pick failed")
             return False
@@ -44,7 +44,7 @@ def executeAction(base_action, toMove, destination, env):
     
     elif base_action == "pick":
         executor = Executor(env, 'pick')
-        success = executor.execute_policy(symgoal=toMove)
+        success = executor.execute_policy(symgoal=toMove, render=True)
         if not success:
             print("Pick failed")
             return False
@@ -52,7 +52,7 @@ def executeAction(base_action, toMove, destination, env):
     
     elif base_action == "reach_drop":
         executor = Executor(env, 'reach_drop')
-        success = executor.execute_policy(symgoal=[toMove,destination])
+        success = executor.execute_policy(symgoal=[toMove,destination], render=True)
         if not success:
             print("Reach drop failed")
             return False
@@ -60,7 +60,7 @@ def executeAction(base_action, toMove, destination, env):
     
     else:
         executor = Executor(env, 'drop')
-        success = executor.execute_policy(symgoal=[toMove,destination])
+        success = executor.execute_policy(symgoal=[toMove,destination], render=True)
         if not success:
             print("Drop failed")
             return False

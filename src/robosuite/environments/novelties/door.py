@@ -7,6 +7,7 @@ class DoorNovelty(Hanoi):
     """
 
     def __init__(self, **kwargs):
-        super().__init__(door_pos=(0.3, -0.075, 0.8, -3*np.pi/2), door_locked=True, **kwargs)
+        #x,y,z,rotation
+        super().__init__(door_pos=(0.1, -0.075, 0.8, -3*np.pi/2), door_locked=True, **kwargs)
 
 
