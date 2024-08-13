@@ -478,7 +478,7 @@ class Hanoi(SingleArmEnv):
             )
 
             if not(self.random_reset):
-                place = 2
+                place = 0
             else:
                 place = np.random.randint(0, 3)
             self.placement_initializer1 = UniformRandomSampler(
