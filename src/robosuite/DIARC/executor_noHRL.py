@@ -8,7 +8,7 @@ from robosuite.DIARC.domain_synapses import *
 import numpy as np
 import time
 import os
-from robosuite.DIARC.diarc_rl.diarc_rl import TRADEWrapper
+from robosuite.DIARC.diarc_rl.tradewrapper import TRADEWrapper
 
 class Executor():
     def __init__(self, env, operator):
@@ -53,6 +53,7 @@ class Executor():
             while not done and not terminated:
                 action, _states = model.predict(obs)
                 if use_diarc:
+                    print("Calling diarc step")
                     response = self.wrapper.call_trade("diarc_step", action)
                     # todo: Parse string response (maybe a jstring) into needed info
                     obs, reward, terminated, truncated, info = None, None, None, None, None
