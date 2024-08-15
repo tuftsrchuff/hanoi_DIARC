@@ -8,18 +8,21 @@ from robosuite.DIARC.domain_synapses import *
 import numpy as np
 import time
 import os
+import random
 from robosuite.DIARC.diarc_rl.tradewrapper import TRADEWrapper
 
 class Executor():
-    def __init__(self, env, operator):
+    def __init__(self, env, operator, use_diarc=True):
         self.env = env
         self.detector = Detector(env)
 
         #Must cast Java string object to python string in DIARC
         self.operator = str(operator)
+        self.use_diarc = use_diarc
         self.wrapper = TRADEWrapper()
         populateExecutorInfo(env)
 
+    #Convert obs array to string for returning to TRADE calls
     def convert_to_string(self, arr):
         ret_string = "["
         for i, item in enumerate(arr):
@@ -32,6 +35,7 @@ class Executor():
         
         return ret_string
 
+    #Convert from string response to floats needed for env steps
     def convert_to_resp(self, response):
         response = str(response)
         response = response.split("]")
@@ -80,11 +84,10 @@ class Executor():
             terminated = False
             print(symgoal)
 
-            use_diarc = True
             #Pass in initial observation
             while not done and not terminated:
                 action, _states = model.predict(obs)
-                if use_diarc:
+                if self.use_diarc:
                     action = self.convert_to_string(action)
                     response = self.wrapper.call_trade("diarc_step", action)
                     
@@ -93,8 +96,6 @@ class Executor():
 
                 else:
                     obs, reward, terminated, truncated, info = self.env.step(action)
-                # obs, reward, terminated, truncated, info = self.env.step(action)
-
 
                 #addGoal
                 obs = addGoal(obs, symgoal, self.env, self.operator)
@@ -107,7 +108,7 @@ class Executor():
                     self.env.render()
 
 
-                if step_executor > 1000:
+                if step_executor > 500:
                     done = True
 
 

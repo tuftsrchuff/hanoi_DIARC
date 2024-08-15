@@ -8,9 +8,10 @@ import time
 controller_config = suite.load_controller_config(default_controller='OSC_POSITION')
 
 class ReachPickWrapper(gym.Wrapper):
-    def __init__(self, env, render_init=False, nulified_action_indexes=[], horizon=500):
+    def __init__(self, env, render_init=False, nulified_action_indexes=[], horizon=500, alive_reset = False):
         # Run super method
         super().__init__(env=env)
+        self.alive_reset = alive_reset
         self.env = env
         self.use_gripper = True
         self.render_init = render_init
@@ -154,8 +155,14 @@ class ReachPickWrapper(gym.Wrapper):
             return False
         #print(state)
         return True
-
+    
     def reset(self, seed=None):
+        if self.alive_reset == True:
+            return self.reset_real()
+        else:
+            return self.reset_sim()
+
+    def reset_sim(self, seed=None):
         # Reset the environment for the drop trask
         self.step_count = 1
         reset = False
@@ -200,23 +207,59 @@ class ReachPickWrapper(gym.Wrapper):
         # time.sleep(5)
         return obs, info
 
-    # def reset(self, seed=None):
-    #     #print("Moving gripper over object...")
-    #     steps = 0
-    #     while steps < 100:
-    #         gripper_pos = np.asarray(self.env.sim.data.body_xpos[self.gripper_body])
-    #         object_pos = np.asarray(self.env.sim.data.body_xpos[self.obj_mapping[self.place_to_drop]])
-    #         print(object_pos)
-    #         dist_xy_plan = object_pos[:2] - gripper_pos[:2]
-    #         action = 5*np.concatenate([dist_xy_plan, [0, 0]])
-    #         obs,_,_,_,_ = self.env.step(action)
-    #         self.env.render()
-    #         print("Resetting...")
-    #         time.sleep(2)
-    #         state = self.detector.get_groundings(as_dict=True, binary_to_float=False, return_distance=False)
-    #         steps += 1
-    #     obs = np.concatenate((obs, self.env.sim.data.body_xpos[self.obj_mapping[self.obj_to_pick]][:3]))
-    #     return obs, {}
+    def reset_real(self, seed=None):
+        #print("Moving gripper over object...")
+        steps = 0
+        dist = 5
+        # print("Resetting...")
+    
+        while dist > 0.1:
+            gripper_pos = np.asarray(self.env.sim.data.body_xpos[self.gripper_body])
+            object_pos = np.asarray([0.1, 0.08, 1.2])
+            # print(f"Gripper position {gripper_pos}")
+
+            dist_xyz_plan = object_pos[:3] - gripper_pos[:3]
+            # print(f"Distance {dist_xyz_plan}")
+
+            dist = np.linalg.norm(object_pos[:3] - gripper_pos[:3])
+            # print(f"Lin Dist {dist}")
+
+            if dist_xyz_plan[0] < 0:
+                x = -0.05
+            else:
+                x = 0.05
+            
+            if dist_xyz_plan[1] < 0:
+                y = -0.05
+            else:
+                y = 0.05
+
+            if dist_xyz_plan[2] < 0:
+                z = -0.05
+            else:
+                z = 0.05
+
+            # time.sleep(1)
+            action = np.asarray([x, y, z, 0.0])
+            obs,_,_,_,_ = self.env.step(action)
+            # self.env.render()
+
+            # time.sleep(2)
+            # state = self.detector.get_groundings(as_dict=True, binary_to_float=False, return_distance=False)
+            steps += 1
+
+            if steps > 500:
+                for i in range(100):
+                    action = np.asarray([0.0, 0.1, 0.0, 0.0])
+                    obs,_,_,_,_ = self.env.step(action)
+                    # self.env.render()
+                for i in range(100):
+                    action = np.asarray([0.0, 0.0, 0.1, 0.0])
+                    obs,_,_,_,_ = self.env.step(action)
+                    # self.env.render()
+                steps = 0
+        obs = np.concatenate((obs, self.env.sim.data.body_xpos[self.obj_mapping[self.obj_to_pick]][:3]))
+        return obs, {}
 
 
     def step(self, action):

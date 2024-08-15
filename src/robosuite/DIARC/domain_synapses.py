@@ -15,7 +15,7 @@ executors = {
      'pick': '../operators/pick_sac.zip',
      'drop': '../operators/drop_ppo.zip',
      'reach_drop': '../operators/reachdrop_sac.zip',
-     'reach_pick': '../operators/reach_pick_sac.zip'
+     'reach_pick': '../operators/reach_pick_novelty.zip'
 }
 
 obj_mapping = {}
@@ -198,6 +198,7 @@ def decomposeAction(action):
     return base_action, symgoal
 
 
+#Used in DIARC to encode returned values from env as string
 def convert_to_string(obs, reward, terminated, truncated):
     ret_string = "["
     for i, item in enumerate(obs):

@@ -18,7 +18,7 @@ import random
 from robosuite.DIARC.executor_noHRL import Executor
 
 controller_config = load_controller_config(default_controller='OSC_POSITION')
-TRAINING_STEPS = 1000000
+TRAINING_STEPS = 600000
 
 
 class Learner():
@@ -32,24 +32,28 @@ class Learner():
         #Populates domain specific information
         populateExecutorInfo(env)
 
-        # self.env = create_env("standard", rand_rest=True)
+        # self.env = create_env("door", rand_rest=False)
 
-        # self.eval_env = create_env("standard", rand_rest=True)
+        # self.eval_env = create_env("door", rand_rest=False)
 
         # self.env = GymWrapper(self.env, keys=['robot0_proprio-state', 'object-state'])
         # self.eval_env = GymWrapper(self.eval_env, keys=['robot0_proprio-state', 'object-state'])
 
         #Wrap environment in proper wrapper for reward, goal
         if self.operator == 'reach_pick':
-            self.env = ReachPickWrapper(self.env)
-            self.eval_env = ReachPickWrapper(self.eval_env)
+            #Alive reset can be ran on real robot, resets to certain position
+            self.env = ReachPickWrapper(self.env, alive_reset=True)
+            self.eval_env = ReachPickWrapper(self.eval_env, alive_reset=True)
         elif self.operator == 'pick':
+            #TODO: set up reset for real robot
             self.env = PickWrapper(self.env)
             self.eval_env = PickWrapper(self.eval_env)
         elif self.operator == 'reach_drop':
+            #TODO: set up reset for real robot
             self.env = ReachDropWrapper(self.env)
             self.eval_env = ReachDropWrapper(self.eval_env)
         else:
+            #TODO: set up reset for real robot
             self.env = DropWrapper(self.env)
             self.eval_env = DropWrapper(self.eval_env)
 
@@ -77,7 +81,7 @@ class Learner():
     def learn(self):
         print(f"Learning {self.operator}")
         #Call train 
-        self.env = Monitor(self.env, filename=None, allow_early_resets=True)
+        self.env = Monitor(self.env, filename=None, allow_early_resets=False)
 
         if self.operator == "drop":
             model = PPO("MlpPolicy", self.env, verbose=1)
@@ -117,8 +121,8 @@ class Learner():
         # Train the model
         model.learn(
             total_timesteps=TRAINING_STEPS,
-            callback=eval_callback,
-            # progress_bar=True
+            # callback=eval_callback,
+            progress_bar=True
         )
 
         # Save the model
@@ -131,6 +135,7 @@ class Learner():
 
         #Policy evaluation for 10 evals needs to reach goal
         # return self.eval_policy()
+
 
         return True
 
