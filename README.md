@@ -15,6 +15,8 @@ This is a Tower of Hanoi environment in Robosuite, with a goal of moving the blo
 
 For executing in sim-to-real, only the ReachPick wrapper is set up to handle that. It uses the alive_reset parameter in its wrapper to make the reset a real position in space, instead of a hard reset in simulation.
 
+The observation space uses Mujoco's robot0_proprio-state and object-state. The wrappers can be found in the diarc_rl.py file in the main function (`env = GymWrapper(env, keys=['robot0_proprio-state', 'object-state'])`).
+
 
 ## Troubleshooting
 ### Mujoco Errors
