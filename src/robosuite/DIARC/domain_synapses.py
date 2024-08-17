@@ -15,7 +15,8 @@ executors = {
      'pick': '../operators/pick_sac.zip',
      'drop': '../operators/drop_ppo.zip',
      'reach_drop': '../operators/reachdrop_sac.zip',
-     'reach_pick': '../operators/reach_pick_novelty.zip'
+     'reach_pick': '../operators/reach_pick_sac.zip'
+    #  'reach_pick': '../operators/reach_pick_novelty.zip'
 }
 
 obj_mapping = {}
